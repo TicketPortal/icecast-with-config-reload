@@ -1,7 +1,8 @@
 FROM alpine:latest
 
-# Install necessary packages and create directories in a single layer
-RUN apk add --no-cache icecast busybox-suid tzdata mailcap wget && \
+# Enable community repository and install necessary packages
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories && \
+    apk add --no-cache icecast busybox-suid tzdata mailcap wget && \
     mkdir -p /etc/icecast /var/log/icecast /var/run/icecast /etc/periodic/15min && \
     addgroup -S icecast && adduser -S -D -H -g "" -G icecast icecast && \
     chown -R icecast:icecast /etc/icecast /var/log/icecast /var/run/icecast

@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-# Use a log file Icecast user can write to
-LOGFILE=/var/log/icecast/cron.log
-touch "$LOGFILE"
+# Start Icecast in background
+icecast2 -c /etc/icecast.xml &
+ICECAST_PID=$!
 
-# Start cron with logging
-crond -b -l 2 -L "$LOGFILE"
-
-# Tail cron log and start Icecast
-tail -f "$LOGFILE" & exec icecast -c /etc/icecast/icecast.xml
+# Every 10 minutes, reload config
+while true; do
+    sleep 600  # 600 seconds = 10 minutes
+    echo "Reloading Icecast config..."
+    kill -HUP $ICECAST_PID
+done

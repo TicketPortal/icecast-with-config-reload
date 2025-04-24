@@ -15,15 +15,9 @@ docker run -d \
 services:
   icecast-master:
     image: ghcr.io/ticketportal/icecast:latest
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints: [node.role == worker]
-    restart: always
     ports:
       - "8000:8000"
     volumes:
-      - /opt/docker/icecast-master/icecast.xml:/etc/icecast.xml
-      - /opt/docker/icecast-master/:/etc/icecast2
+      - /opt/docker/icecast/icecast.xml:/etc/icecast.xml
+      - /opt/docker/icecast-files/:/etc/icecast2
 ```

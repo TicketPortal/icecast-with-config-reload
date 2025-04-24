@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: ticket-portal-icecast
+  IMAGE_NAME: icecast
   REGISTRY: ghcr.io
 
 jobs:

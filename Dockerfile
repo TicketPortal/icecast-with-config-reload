@@ -19,14 +19,15 @@ RUN wget https://downloads.xiph.org/releases/icecast/icecast-2.4.4.tar.gz && \
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# Create a cron job to reload Icecast configuration every 5 minutes
+RUN echo '*/5 * * * * pkill -HUP -u icecast icecast' > /etc/crontabs/root && \
+    chmod 600 /etc/crontabs/root
+
 # Set working directory
 WORKDIR /etc/icecast
 
 # Expose ports
 EXPOSE 8000 8443
-
-# Create a cron job to reload Icecast configuration every 5 minutes
-RUN echo '*/5 * * * * pkill -HUP -u icecast icecast' > /etc/crontabs/root && chmod 600 /etc/crontabs/root
 
 # Switch to icecast user
 USER icecast

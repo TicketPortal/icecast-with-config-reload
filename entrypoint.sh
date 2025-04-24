@@ -1,8 +1,11 @@
 #!/bin/sh
 
-# Start cron with logging
-touch /var/log/cron.log
-crond -b -l 2 -L /var/log/cron.log
+# Use a log file Icecast user can write to
+LOGFILE=/var/log/icecast/cron.log
+touch "$LOGFILE"
 
-# Tail logs for visibility & Start icecast
-tail -f /var/log/cron.log & exec icecast -c /etc/icecast.xml
+# Start cron with logging
+crond -b -l 2 -L "$LOGFILE"
+
+# Tail cron log and start Icecast
+tail -f "$LOGFILE" & exec icecast -c /etc/icecast/icecast.xml

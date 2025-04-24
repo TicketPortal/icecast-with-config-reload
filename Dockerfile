@@ -11,7 +11,7 @@ RUN apt-get update && \
     apt-add-repository universe && \
     apt-add-repository multiverse && \
     apt-get update && \
-    apt-get install -y icecast2 mime-support && \
+    apt-get install -y icecast2 media-types && \
     useradd -r -s /usr/sbin/nologin icecast && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

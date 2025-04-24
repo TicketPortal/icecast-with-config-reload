@@ -25,10 +25,6 @@ WORKDIR /etc/icecast
 # Expose ports
 EXPOSE 8000 8443
 
-# Healthcheck to ensure Icecast is running
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD wget --spider -q http://localhost:8000/ || exit 1
-
 # Create a cron job to reload Icecast configuration every 5 minutes
 RUN echo "*/5 * * * * kill -HUP \$(pidof icecast)" > /etc/crontabs/root && \
     chmod 600 /etc/crontabs/root

@@ -5,11 +5,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y icecast2 media-types && \
     useradd -r -s /usr/sbin/nologin icecast && \
-    mkdir -p /var/log/icecast2 /var/run/icecast2 && \
-    chown -R icecast:icecast /var/log/icecast2 /var/run/icecast2 /etc/icecast2 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Create working dirs
 RUN mkdir -p /var/log/icecast2 /var/run/icecast2 && \
     chown -R icecast:icecast /var/log/icecast2 /var/run/icecast2 /etc/icecast2
 

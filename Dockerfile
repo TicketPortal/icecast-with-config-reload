@@ -2,11 +2,10 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-    apt-get install -y icecast2 media-types && \
-    id -u icecast &>/dev/null || useradd -r -s /usr/sbin/nologin icecast && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y icecast2 media-types
+RUN id -u icecast &>/dev/null || useradd -r -s /usr/sbin/nologin icecast
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /var/log/icecast2 /var/run/icecast2 && \
     chown -R icecast:icecast /var/log/icecast2 /var/run/icecast2 /etc/icecast2 || true

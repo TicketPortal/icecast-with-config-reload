@@ -1,8 +1,10 @@
 <icecast>
+    <location>CZ</location>
+    <admin>admin@example.com</admin>
+
     <limits>
         <clients>100</clients>
         <sources>2</sources>
-        <threadpool>5</threadpool>
         <queue-size>524288</queue-size>
         <client-timeout>30</client-timeout>
         <header-timeout>15</header-timeout>
@@ -22,7 +24,6 @@
 
     <listen-socket>
         <port>8000</port>
-        <bind-address>127.0.0.1</bind-address>
     </listen-socket>
 
     <fileserve>1</fileserve>
@@ -32,12 +33,23 @@
         <logdir>/var/log/icecast2</logdir>
         <webroot>/etc/icecast2/web</webroot>
         <adminroot>/etc/icecast2/admin</adminroot>
+        <pidfile>/var/run/icecast2/icecast.pid</pidfile>
+        <alias source="/" destination="/status.xsl" />
     </paths>
 
     <logging>
-        <accesslog>icecast.log</accesslog>
+        <accesslog>access.log</accesslog>
         <errorlog>error.log</errorlog>
-        <loglevel>3</loglevel>
+        <loglevel>2</loglevel> <!-- 4 = debug, 3 = info, 2 = warn, 1 = error -->
+        <logsize>10000</logsize>
     </logging>
 
+    <security>
+        <chroot>0</chroot>
+    </security>
+
+    <changeowner>
+        <user>icecast</user>
+        <group>icecast</group>
+    </changeowner>
 </icecast>

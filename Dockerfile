@@ -1,59 +1,25 @@
-FROM alpine:3.20@sha256:de4fe7064d8f98419ea6b49190df1abbf43450c1702eeb864fe9ced453c1cc5f AS builder
-ARG VERSION
+FROM alpine:latest
 
-RUN apk --no-cache add \
-    build-base \
-    # Icecast
-    curl-dev \
-    libogg-dev \
-    libtheora-dev \
-    libvorbis-dev \
-    libxml2-dev \
-    libxslt-dev \
-    openssl-dev \
-    speex-dev
+LABEL maintainer="Lada Soukup <your-email@example.com>"
 
-WORKDIR /build
-ADD icecast-$VERSION.tar.gz .
-RUN if test ! -d icecast-$VERSION; then mv icecast-* icecast-$VERSION; fi
+# Install Icecast, cron, and necessary utils
+RUN apk add --no-cache icecast busybox-suid tzdata
 
-WORKDIR /build/icecast-$VERSION
-RUN ./configure \
-    --prefix=/usr \
-    --sysconfdir=/etc \
-    --localstatedir=/var
+# Create necessary dirs
+RUN mkdir -p /var/log/icecast /var/run/icecast /etc/periodic/15min
 
-RUN make
-RUN make install DESTDIR=/build/output
+# Script to reload Icecast config using HUP
+RUN echo '#!/bin/sh\n\
+pid=$(pidof icecast)\n\
+[ -n "$pid" ] && kill -HUP "$pid" || echo "Icecast not running"' \
+  > /etc/periodic/15min/reload-icecast && chmod +x /etc/periodic/15min/reload-icecast
 
-FROM alpine:3.20@sha256:de4fe7064d8f98419ea6b49190df1abbf43450c1702eeb864fe9ced453c1cc5f
+# Expose ports
+EXPOSE 8000 8443
 
-RUN apk --no-cache add \
-    libcurl \
-    libogg \
-    libtheora \
-    libvorbis \
-    libxml2 \
-    libxslt \
-    openssl \
-    speex \
-    dcron
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget --spider -q http://localhost:8000/ || exit 1
 
-ENV USER=icecast
-
-RUN adduser --disabled-password --gecos '' --no-create-home $USER
-
-COPY --from=builder /build/output /
-
-RUN mkdir -p /var/log/icecast && \
-    chown $USER /etc/icecast.xml /var/log/icecast
-
-EXPOSE 8000
-EXPOSE 8443
-USER $USER
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["-c", "/etc/icecast.xml"]
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s CMD curl -f http://localhost:8000/ || exit 1
+# Entrypoint script to start both cron and Icecast
+CMD sh -c "crond -f & icecast -c /etc/icecast.xml"

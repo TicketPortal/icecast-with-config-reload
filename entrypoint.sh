@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start Icecast in background
-icecast2 -c /etc/icecast.xml &
+icecast2 -c /etc/icecast2/icecast.xml &
 ICECAST_PID=$!
 
 # Every 10 minutes, reload config

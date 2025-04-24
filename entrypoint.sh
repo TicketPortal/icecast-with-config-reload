@@ -1,7 +1,8 @@
 #!/bin/sh
 
-# Start the cron daemon in the background
-crond -b -l 2
+# Start cron with logging
+touch /var/log/cron.log
+crond -b -l 2 -L /var/log/cron.log
 
-# Start Icecast
-exec icecast -c /etc/icecast.xml
+# Tail logs for visibility & Start icecast
+tail -f /var/log/cron.log & exec icecast -c /etc/icecast.xml

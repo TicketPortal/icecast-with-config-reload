@@ -26,8 +26,7 @@ WORKDIR /etc/icecast
 EXPOSE 8000 8443
 
 # Create a cron job to reload Icecast configuration every 5 minutes
-RUN echo "*/5 * * * * kill -HUP \$(pidof icecast)" > /etc/crontabs/root && \
-    chmod 600 /etc/crontabs/root
+RUN echo '*/5 * * * * pkill -HUP -u icecast icecast' > /etc/crontabs/root && chmod 600 /etc/crontabs/root
 
 # Switch to icecast user
 USER icecast
